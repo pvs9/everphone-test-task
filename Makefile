@@ -25,6 +25,12 @@ rest:
 bash:
 	docker-compose exec app bash
 
+db-init:
+	docker-compose exec app go run cmd/main.go db init
+
+db-migrate:
+	docker-compose exec app go run cmd/main.go db migrate
+
 aws-cli:
 	docker run --network=app-network-test  vpdev/awscli --endpoint-url="http://localstack:4566" $(filter-out $@,$(MAKECMDGOALS))
 
