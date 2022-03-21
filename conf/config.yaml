@@ -1,0 +1,20 @@
+port: "3000"
+
+auth:
+  user: "app"
+
+db:
+  username: "app"
+  host: "db"
+  port: "5432"
+  dbname: "app"
+
+queue:
+  consumer:
+    max_messages: 10
+    visibility_timeout: 20
+    poll_delay: 100
+    receivers: 1
+  host: "http://localstack:4566"
+  region: "eu-central-1"
+  name: "my-queue"

@@ -1,0 +1,6 @@
+FROM vpdev/golang-base
+
+ENV GO111MODULE=on
+
+# Set the local PORT environment variable inside the container
+ENV PORT 3000

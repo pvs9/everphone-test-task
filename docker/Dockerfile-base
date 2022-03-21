@@ -1,0 +1,5 @@
+FROM golang:1.18
+
+RUN mkdir -p /go/src/everphone-test-task.io
+
+WORKDIR /go/src/everphone-test-task.io

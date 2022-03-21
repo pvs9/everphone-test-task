@@ -1,0 +1,62 @@
+version: '3.6'
+services:
+  app: &app
+    build:
+      context: .
+      dockerfile: docker/Dockerfile-dev
+    image: vpdev/golang-dev
+    networks:
+      - app-network
+    depends_on:
+      - localstack
+      - db
+      - awscli
+    volumes:
+      - ./:/go/src/everphone-test-task.io
+
+  app:
+    <<: *app
+    ports:
+      - "3333:3000"
+    command: [ "/bin/sh", "-c", "go run cmd/main.go run" ]
+
+  app-consumer:
+    <<: *app
+    command: [ "/bin/sh", "-c", "go run cmd/main.go consume" ]
+
+
+  db:
+    image: postgres:latest
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_DB=app
+      - POSTGRES_USER=app
+      - POSTGRES_PASSWORD=app
+    networks:
+      - app-network
+
+  localstack:
+    image: localstack/localstack:latest
+    user: root
+    environment:
+      - DATA_DIR=/tmp/localstack/data
+      - SERVICES=sqs
+      - HOSTNAME_EXTERNAL=localstack
+    ports:
+      - 4566:4566
+    networks:
+      - app-network
+
+  awscli:
+    depends_on:
+      - localstack
+    image: vpdev/awscli
+    command: 'sqs create-queue --queue-name my-queue --endpoint-url="http://localstack:4566" --region=eu-central-1'
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    name: app-network-test
+    driver: bridge
